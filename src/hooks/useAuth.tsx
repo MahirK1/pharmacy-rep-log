@@ -64,14 +64,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id,email,full_name,role')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching profile:', error);
+      }
+
+      if (data) {
+        const safeRole = (data.role === 'admin' || data.role === 'sales_rep') ? data.role : 'sales_rep';
+        setProfile({ id: data.id, email: data.email, full_name: data.full_name, role: safeRole });
       } else {
-        setProfile(data);
+        setProfile(null);
       }
     } catch (error) {
       console.error('Error:', error);

@@ -8,6 +8,11 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import { Layout } from "@/components/layout/Layout";
 import { Dashboard } from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
+import Visits from "./pages/Visits";
+import Pharmacies from "./pages/Pharmacies";
+import CalendarPage from "./pages/Calendar";
+import Analytics from "./pages/Analytics";
+import Users from "./pages/Users";
 
 const queryClient = new QueryClient();
 
@@ -33,11 +38,11 @@ const AppContent = () => {
     <Layout>
       <Routes>
         <Route path="/" element={<Dashboard />} />
-        <Route path="/visits" element={<div>Posjete - coming soon</div>} />
-        <Route path="/pharmacies" element={<div>Apoteke - coming soon</div>} />
-        <Route path="/calendar" element={<div>Kalendar - coming soon</div>} />
-        <Route path="/analytics" element={<div>Analitika - coming soon</div>} />
-        <Route path="/users" element={<div>Korisnici - coming soon</div>} />
+        <Route path="/visits" element={<Visits />} />
+        <Route path="/pharmacies" element={<Pharmacies />} />
+        <Route path="/calendar" element={<CalendarPage />} />
+        <Route path="/analytics" element={<Analytics />} />
+        <Route path="/users" element={<Users />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Layout>
