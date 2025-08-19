@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { NewPharmacyDialog } from "@/components/pharmacies/NewPharmacyDialog";
+import { EditPharmacyDialog } from "@/components/pharmacies/EditPharmacyDialog";
 
 interface Pharmacy {
   id: string;
@@ -64,6 +65,7 @@ export default function Pharmacies() {
                     <TableHead>Grad</TableHead>
                     <TableHead>Telefon</TableHead>
                     <TableHead>Kontakt osoba</TableHead>
+                    <TableHead>Akcije</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -73,6 +75,14 @@ export default function Pharmacies() {
                       <TableCell>{pharmacy.city}</TableCell>
                       <TableCell>{pharmacy.phone || "—"}</TableCell>
                       <TableCell>{pharmacy.contact_person || "—"}</TableCell>
+                      <TableCell>
+                        <EditPharmacyDialog 
+                          pharmacy={pharmacy} 
+                          onUpdated={(updated) => {
+                            setPharmacies(prev => prev.map(p => p.id === updated.id ? updated : p));
+                          }} 
+                        />
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

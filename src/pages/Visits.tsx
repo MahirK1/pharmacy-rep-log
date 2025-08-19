@@ -6,6 +6,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { NewVisitDialog } from "@/components/visits/NewVisitDialog";
+import { EditVisitDialog } from "@/components/visits/EditVisitDialog";
+import { DeleteVisitDialog } from "@/components/visits/DeleteVisitDialog";
 
 interface VisitRow {
   id: string;
@@ -46,6 +48,7 @@ export default function Visits() {
       pharmacy: pharmacies[v.pharmacy_id] || v.pharmacy_id,
       rep: profile?.full_name || "—",
       status: v.status === "planned" ? "Planirano" : v.status === "completed" ? "Završeno" : "Otkazano",
+      visit: v, // Full visit object for edit/delete
     }));
   }, [visits, pharmacies, profile?.full_name]);
 
@@ -87,6 +90,7 @@ export default function Visits() {
                     <TableHead>Apoteka</TableHead>
                     <TableHead>Predstavnik</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Akcije</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -96,6 +100,22 @@ export default function Visits() {
                       <TableCell>{r.pharmacy}</TableCell>
                       <TableCell>{r.rep}</TableCell>
                       <TableCell>{r.status}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <EditVisitDialog 
+                            visit={r.visit} 
+                            onUpdated={(updated) => {
+                              setVisits(prev => prev.map(v => v.id === updated.id ? updated : v));
+                            }} 
+                          />
+                          <DeleteVisitDialog 
+                            visitId={r.id} 
+                            onDeleted={() => {
+                              setVisits(prev => prev.filter(v => v.id !== r.id));
+                            }} 
+                          />
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
