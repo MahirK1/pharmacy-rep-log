@@ -1,19 +1,34 @@
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import { SEO } from "@/components/SEO";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { supabase } from "@/integrations/supabase/client";
+import { NewPharmacyDialog } from "@/components/pharmacies/NewPharmacyDialog";
+
+interface Pharmacy {
+  id: string;
+  name: string;
+  city: string;
+  address: string;
+  phone?: string;
+  email?: string;
+  contact_person?: string;
+}
 
 export default function Pharmacies() {
-  const rows = useMemo(
-    () => [
-      { name: "Apoteka Sunce", city: "Sarajevo", phone: "+387 33 123 456" },
-      { name: "Apoteka Zdravlje", city: "Mostar", phone: "+387 36 987 654" },
-      { name: "Apoteka Vita", city: "Banja Luka", phone: "+387 51 222 333" },
-    ],
-    []
-  );
+  const [pharmacies, setPharmacies] = useState<Pharmacy[]>([]);
+
+  useEffect(() => {
+    const loadPharmacies = async () => {
+      const { data } = await supabase
+        .from("pharmacies")
+        .select("*")
+        .order("name");
+      setPharmacies(data || []);
+    };
+    loadPharmacies();
+  }, []);
 
   return (
     <>
@@ -31,7 +46,9 @@ export default function Pharmacies() {
           <div className="flex-1">
             <Input placeholder="Pretraži apoteke..." aria-label="Pretraži apoteke" />
           </div>
-          <Button>Nova apoteka</Button>
+          <NewPharmacyDialog onCreated={(pharmacy) => {
+            setPharmacies(prev => [pharmacy, ...prev]);
+          }} />
         </section>
 
         <section aria-label="Lista apoteka">
@@ -46,14 +63,16 @@ export default function Pharmacies() {
                     <TableHead>Naziv</TableHead>
                     <TableHead>Grad</TableHead>
                     <TableHead>Telefon</TableHead>
+                    <TableHead>Kontakt osoba</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {rows.map((r, i) => (
-                    <TableRow key={i}>
-                      <TableCell>{r.name}</TableCell>
-                      <TableCell>{r.city}</TableCell>
-                      <TableCell>{r.phone}</TableCell>
+                  {pharmacies.map((pharmacy) => (
+                    <TableRow key={pharmacy.id}>
+                      <TableCell>{pharmacy.name}</TableCell>
+                      <TableCell>{pharmacy.city}</TableCell>
+                      <TableCell>{pharmacy.phone || "—"}</TableCell>
+                      <TableCell>{pharmacy.contact_person || "—"}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
